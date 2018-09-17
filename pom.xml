@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     
     <groupId>com.example.myproject</groupId>
-    <artifactId>myproject-parent</artifactId>
+    <artifactId>myproject</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
     
@@ -16,6 +16,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
         <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+        <skipITs>false</skipITs>
         
         <!-- Platform Versionen -->
         <!-- https://docs.payara.fish/release-notes/release-notes-183.html -->
@@ -26,9 +27,24 @@
         <myproject-service.image.name>${project.artifactId}:${project.version}</myproject-service.image.name>
 
         <!-- Mehrfachverwendete Dependency Versionen -->
-        <junit.version>5.3.0</junit.version>
+        <junit.version>4.12</junit.version>
+        <flyway.version>5.1.4</flyway.version>
+        <geronimo-microprofile.version>1.2</geronimo-microprofile.version>
+        <deltaspikes.version>1.8.2</deltaspikes.version>
+        <weld.version>2.4.7.Final</weld.version>
     </properties>
-    
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.deltaspike.distribution</groupId>
+                <artifactId>distributions-bom</artifactId>
+                <version>${deltaspikes.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <!-- ========================================================== -->
         <!-- Platform dependencies -->
@@ -39,6 +55,7 @@
             <artifactId>microprofile</artifactId>
             <version>${payara.microprofile-api.version}</version>
             <type>pom</type>
+            <scope>provided</scope>
         </dependency>
 
         <!-- ========================================================== -->
@@ -48,26 +65,72 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>5.1.4</version>
+            <version>${flyway.version}</version>
         </dependency>
 
         <!-- ========================================================== -->
         <!-- Testing dependencies -->
         <!-- ========================================================== -->
 
-        <!-- https://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven-engines-configure -->
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <groupId>org.apache.deltaspike.core</groupId>
+            <artifactId>deltaspike-core-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.deltaspike.core</groupId>
+            <artifactId>deltaspike-core-impl</artifactId>
+            <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-test-control-module-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-test-control-module-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.deltaspike.cdictrl</groupId>
+            <artifactId>deltaspike-cdictrl-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.deltaspike.cdictrl</groupId>
+            <artifactId>deltaspike-cdictrl-weld</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jboss.weld</groupId>
+                    <artifactId>weld-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se</artifactId>
+            <version>${weld.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.geronimo.config</groupId>
+            <artifactId>geronimo-config-impl</artifactId>
+            <version>${geronimo-microprofile.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -175,6 +238,47 @@
                                         </assembly>
                                         <dockerFileDir>${basedir}/src/main/docker</dockerFileDir>
                                     </build>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>docker-start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>${myproject-service.image.name}</name>
+                                    <run>
+                                        <skip>${skipITs}</skip>
+                                        <ports>
+                                            <port>+it.service.host:it.service.http.port:8080</port>
+                                        </ports>
+                                        <wait>
+                                            <healthy>true</healthy>
+                                            <time>30000</time>
+                                        </wait>
+                                        <log>
+                                            <color>blue</color>
+                                        </log>
+                                    </run>
+                                </image>
+                            </images>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>docker-stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                        <configuration>
+                            <images>
+                                <image>
+                                    <name>${myproject-service.image.name}</name>
                                 </image>
                             </images>
                         </configuration>
