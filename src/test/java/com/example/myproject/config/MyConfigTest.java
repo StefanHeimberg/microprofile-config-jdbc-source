@@ -17,9 +17,18 @@ public class MyConfigTest {
     private MyConfig config;
 
     @Test
-    public void test() {
+    public void test_load_from_microprofile_config_properties() {
         assertEquals("my-value-1", config.getMyKey1());
+    }
+
+    @Test
+    public void test_load_from_system_properties() {
         assertEquals("my-value-2", config.getMyKey2());
+    }
+
+    @Test
+    public void test_test_load_from_custom_config_source() {
+        assertEquals("my-value-3", config.getMyKey3());
     }
 
 }

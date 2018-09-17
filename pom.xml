@@ -21,6 +21,7 @@
         <!-- Platform Versionen -->
         <!-- https://docs.payara.fish/release-notes/release-notes-183.html -->
         <payara.version>5.183</payara.version>
+        <payara.persistence.version>2.2</payara.persistence.version>
         <payara.microprofile-api.version>2.0.1</payara.microprofile-api.version>
         <payara.minimum-jdk.version>1.8.0-162</payara.minimum-jdk.version>
 
@@ -56,6 +57,18 @@
             <version>${payara.microprofile-api.version}</version>
             <type>pom</type>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>javax.persistence-api</artifactId>
+            <version>${payara.persistence.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>1.3</version>
         </dependency>
 
         <!-- ========================================================== -->
@@ -102,6 +115,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-jpa-module-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.deltaspike.modules</groupId>
+            <artifactId>deltaspike-jpa-module-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.deltaspike.cdictrl</groupId>
             <artifactId>deltaspike-cdictrl-api</artifactId>
             <scope>test</scope>
@@ -131,6 +156,20 @@
             <version>${geronimo-microprofile.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>2.7.3</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.197</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -153,6 +192,11 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.0</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <my.config.key.2>my-value-2</my.config.key.2>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
 
             <plugin>
