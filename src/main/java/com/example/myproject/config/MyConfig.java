@@ -3,11 +3,8 @@ package com.example.myproject.config;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import java.sql.Connection;
 
 @ApplicationScoped
 public class MyConfig {
@@ -18,14 +15,6 @@ public class MyConfig {
     @Inject
     @ConfigProperty(name = MyConfigKeys.MY_KEY_1)
     private String configValue1;
-
-    @Inject
-    private EntityManager em;
-
-    @PostConstruct
-    public void init() {
-        reload();
-    }
 
     public String getMyKey1() {
         return configValue1;
@@ -41,15 +30,6 @@ public class MyConfig {
 
     public Config getConfig() {
         return config;
-    }
-
-    public void reload() {
-        config.getConfigSources().forEach(cs -> {
-            if(MyConfigConfigSource.NAME.equals(cs.getName())) {
-                final MyConfigConfigSource myConfigConfigSource = (MyConfigConfigSource) cs;
-                myConfigConfigSource.reloadConfiguration(em.unwrap(Connection.class));
-            }
-        });
     }
 
 }
