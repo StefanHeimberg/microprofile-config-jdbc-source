@@ -1,6 +1,6 @@
 package com.example.myproject.config;
 
-import com.example.myproject.config.test.MyConfigH2CdiTestRunner;
+import org.apache.deltaspike.testcontrol.api.junit.CdiTestRunner;
 import org.eclipse.microprofile.config.Config;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 import static junit.framework.TestCase.assertNotNull;
 
-@RunWith(MyConfigH2CdiTestRunner.class)
+@RunWith(CdiTestRunner.class)
 @Dependent
 public class MyConfigConfigProviderTest {
 

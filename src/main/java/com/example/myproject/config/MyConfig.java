@@ -13,7 +13,7 @@ public class MyConfig {
     private Config config;
 
     @Inject
-    @ConfigProperty(name = MyConfigKeys.MY_KEY_1)
+    @ConfigProperty(name = MyConfigKey.MY_KEY_1)
     private String configValue1;
 
     public String getMyKey1() {
@@ -21,11 +21,11 @@ public class MyConfig {
     }
 
     public String getMyKey2() {
-        return config.getValue(MyConfigKeys.MY_KEY_2, String.class);
+        return config.getValue(MyConfigKey.MY_KEY_2, String.class);
     }
 
     public String getMyKey3() {
-        return config.getValue(MyConfigKeys.MY_KEY_3, String.class);
+        return config.getValue(MyConfigKey.MY_KEY_3, String.class);
     }
 
     public Config getConfig() {
